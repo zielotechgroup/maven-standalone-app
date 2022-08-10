@@ -14,3 +14,5 @@ mvn clean package
 # Run the Jar
 
 java -jar target/name_of_jar.jar
+
+#Test
