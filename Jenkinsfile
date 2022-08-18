@@ -1,5 +1,5 @@
 pipeline {
-    agent  slave-node_1
+    agent  any
     
     tools{
         maven 'mvn_3.1'
