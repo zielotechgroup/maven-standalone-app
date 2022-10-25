@@ -1,37 +1,48 @@
 pipeline {
-    agent  any
-    
-    tools{
-        maven 'mvn_3.1'
-        jdk 'localjdk'
+    agent any
+
+    tools {
+        // Install the Maven version configured as "M3" and add it to the path.
+        maven "maven-3.8.8"
     }
     
+
     stages {
-        
-        stage('Checkout'){
+        stage('Checkout') {
             steps {
                 cleanWs()
-                git 'https://github.com/zielotechgroup/maven-standalone-app.git'
+                // Get some code from a GitHub repository
+                git 'https://github.com/jglick/simple-maven-project-with-tests.git'
             }
         }
-        
-        stage('Build'){
+        stage('Build') {
             steps {
-                sh 'mvn -DskipTests clean package'
+                // Run Maven on a Unix agent.
+                sh "mvn -Dmaven.test.failure.ignore=true clean package checkstyle:checkstyle"
+
+                // To run Maven on a Windows agent, use
+                // bat "mvn -Dmaven.test.failure.ignore=true clean package"
             }
-            post {
-                failure {
-                    archiveArtifacts artifacts: '**/*.jar', followSymlinks: false
-                }
+
+        }
+        
+        stage('UT'){
+            steps {
+                junit '**/target/surefire-reports/TEST-*.xml'
+                archiveArtifacts 'target/*.jar'
             }
         }
         
-        stage('Test'){
+        stage('Static Analysis'){
             steps{
-                sh 'mvn test'
+                recordIssues enabledForFailure: true, tools: [checkStyle(pattern: '**/checkstyle-result.xml')]
             }
         }
         
-        
+        stage('Code Coverage'){
+            steps{
+                jacoco maximumBranchCoverage: '80', maximumClassCoverage: '80', maximumComplexityCoverage: '80', maximumInstructionCoverage: '80', maximumLineCoverage: '80', maximumMethodCoverage: '80', minimumBranchCoverage: '80', minimumClassCoverage: '80', minimumComplexityCoverage: '80', minimumInstructionCoverage: '80', minimumLineCoverage: '80', minimumMethodCoverage: '80'
+            }
+        }
     }
 }
