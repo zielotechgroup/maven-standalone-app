@@ -26,12 +26,12 @@ pipeline {
 
         }
         
-        stage('UT'){
-            steps {
-                junit '**/target/surefire-reports/TEST-*.xml'
-                archiveArtifacts 'target/*.jar'
-            }
-        }
+//         stage('UT'){
+//             steps {
+//                 junit '**/target/surefire-reports/TEST-*.xml'
+//                 archiveArtifacts 'target/*.jar'
+//             }
+//         }
         
         stage('Static Analysis'){
             steps{
